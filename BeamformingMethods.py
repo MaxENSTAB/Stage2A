@@ -10,13 +10,13 @@ import time as t
 
 
 # Bref ça marche pas encore 
-def CBF(s_angles,s_amp,sig_n,N,M,S,L,lam):
+def CBF(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	"""
 	Classical beamforming, renvoie PCBF
 	"""
 	temp = rd.randn(S,L)
 	n = sig_n*(rd.randn(M,L))  #Gaussien centré
-	s = np.sin(2*np.pi*c0*temp/4) #Je génère un signal aléatoire
+	s = np.sin((1-np.linalg.norm(V)/c0)*2*np.pi*c0*temp/4) #Je génère un signal aléatoire
 	for i in range(len(s_amp)):
 	    s[i] *= s_amp[i]
 	A = compute_A(s_angles,lam,M)
@@ -32,17 +32,17 @@ def CBF(s_angles,s_amp,sig_n,N,M,S,L,lam):
 	    a_pcbf = a(angles1[i], lam,M)
 	    PCBF[i] = a_pcbf.T.conj() @ Syy @ a_pcbf / (np.linalg.norm(a_pcbf) ** 4)
 
-	return np.array(PCBF)
+	return np.array(PCBF)/np.max(PCBF)
 
 
-def MUSIC(s_angles,s_amp,sig_n,N,M,S,L,lam):
+def MUSIC(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	"""
 	MUSIC
 
 	"""
 	temp = rd.randn(S,L)
 	n = sig_n*(rd.randn(M,L))  #Gaussien centré
-	s = np.sin(2*np.pi*c0*temp/4) #Je génère un signal aléatoire
+	s = np.sin((1-np.linalg.norm(V)/c0)*2*np.pi*c0*temp/4) #Je génère un signal aléatoire
 	for i in range(len(s_amp)):
 	    s[i] *= s_amp[i]
 	A = compute_A(s_angles,lam,M)
@@ -63,13 +63,13 @@ def MUSIC(s_angles,s_amp,sig_n,N,M,S,L,lam):
 	return np.array(PMUSIC/np.max(PMUSIC))
 
 
-def MVDR(s_angles,s_amp,sig_n,N,M,S,L,lam):
+def MVDR(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	"""
 	MVDR
 	"""
 	temp = rd.randn(S,L)
 	n = sig_n*(rd.randn(M,L))  #Gaussien centré
-	s = np.sin(2*np.pi*c0*temp/4) #Je génère un signal aléatoire
+	s = np.sin((1-np.linalg.norm(V)/c0)*2*np.pi*c0*temp/4) #Je génère un signal aléatoire
 	for i in range(len(s_amp)):
 	    s[i] *= s_amp[i]
 	A = compute_A(s_angles,lam,M)
