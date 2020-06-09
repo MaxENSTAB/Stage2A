@@ -10,7 +10,7 @@ import time as t
 
 
 # Bref ça marche pas encore 
-def CBF(s_angles,s_amp,sig_n,N,M,S,L,lam):
+def CBF(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	"""
 	Classical beamforming, renvoie PCBF
 	"""
@@ -35,7 +35,7 @@ def CBF(s_angles,s_amp,sig_n,N,M,S,L,lam):
 	return np.array(PCBF)
 
 
-def MUSIC(s_angles,s_amp,sig_n,N,M,S,L,lam):
+def MUSIC(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	"""
 	MUSIC
 
@@ -63,7 +63,7 @@ def MUSIC(s_angles,s_amp,sig_n,N,M,S,L,lam):
 	return np.array(PMUSIC/np.max(PMUSIC))
 
 
-def MVDR(s_angles,s_amp,sig_n,N,M,S,L,lam):
+def MVDR(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	"""
 	MVDR
 	"""
