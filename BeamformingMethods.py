@@ -124,6 +124,51 @@ def compute_A(thetas,lam,M):
     return res.T
 
 
+def a(theta,lam,M):
+    """
+    Fonction renvoyant le steering vector
+    :param theta: angle thêta
+    :param lam: longueur d'onde
+    :param M: nombre de capteurs (Donc ici nombre d'émetteurs)
+    :return: array
+    """
+    res = np.zeros(M, dtype=complex)
+    for i in range(0, M):
+        res[i] = np.exp(-1j * (2 * np.pi * d * i * np.sin(theta) / lam))
+    return res
+
+def compute_A(thetas,lam,M):
+    """
+    Fonction renvoyant la steering matrix, qui serait la concaténation des steering vectors pour chaque theta
+    :param thetas: liste d'angles
+    :param lam: longueur d'onde
+    :param M: nombre de capteurs (Donc ici nombre d'émetteurs)
+    :return: 2D array
+    """
+    res = np.zeros((len(thetas), M), dtype = complex)
+    
+    for i in range(len(thetas)):
+        lis = np.zeros(M, dtype = complex)
+        for k in range(0,M):
+            lis[k] = np.exp(-1j * (2*np.pi*d*k*np.sin(thetas[i]) /lam))
+        res[i] = lis
+    return res.T
+
+def DP(theta,lam,M):
+    """
+    Schéma directionnel  (directivity pattern)
+    :param theta:
+    :return:
+    """
+    A = a(theta,lam,M)
+    temp = np.dot(np.conj(A).T, a(theta0,lam,M))
+    dp = 20*np.log10(temp/(np.linalg.norm(a(theta,lam,M))**2))
+    return dp
+
+
+
+
+
 c0 = 3e8   #célérité de la lumière dans l'air 
 d = 0.4          #Distance entre mes émetteurs
 M = 5              #Nombre d'émetteurs sur ma cible
