@@ -154,7 +154,7 @@ def compute_A(thetas,lam,M):
         res[i] = lis
     return res.T
 
-def DP(theta,lam,M):
+def DP(theta,lam,M,theta0):
     """
     Schéma directionnel  (directivity pattern)
     :param theta:
