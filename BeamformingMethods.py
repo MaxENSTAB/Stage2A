@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy.random as rd      #Imports d'usage
+import scipy
 from scipy.signal import find_peaks
+
 import time as t
 ####################################################################################################
 #  ATTENTION, il faut revoir ce que je mets en entrée, et surtout penser à la portée des var
@@ -14,11 +16,16 @@ def CBF(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	"""
 	Classical beamforming, renvoie PCBF
 	"""
-	temp = rd.randn(S,L)
+	s = []
+	for i in range(S):
+	   temp = scipy.signal.square(4*np.pi*c0*np.linspace(i,L+i,L)/lam)
+	   s.append(temp)
+
+	s = np.array(s)
+	
 	n = sig_n*(rd.randn(M,L))  #Gaussien centré
-	s = np.sin((1-np.linalg.norm(V)/c0)*2*np.pi*c0*temp/4) #Je génère un signal aléatoire
 	for i in range(len(s_amp)):
-	    s[i] *= s_amp[i]
+		s[i] *= s_amp[i]
 	A = compute_A(s_angles,lam,M)
 	y = A@s + n     #On retrouve bien la linéarité
 	Syy = y @ y.T.conj() / L
@@ -26,11 +33,11 @@ def CBF(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 
 	angles1 = np.linspace(- np.pi/2,np.pi/2,N)
 	PCBF = np.zeros(N, dtype = complex)   #Ça signifie Puissance pour du classic beamforming 
-	                                        # Un pic de puissance indiquera la position de notre source
+											# Un pic de puissance indiquera la position de notre source
 
 	for i in range(N):
-	    a_pcbf = a(angles1[i], lam,M)
-	    PCBF[i] = a_pcbf.T.conj() @ Syy @ a_pcbf / (np.linalg.norm(a_pcbf) ** 4)
+		a_pcbf = a(angles1[i], lam,M)
+		PCBF[i] = a_pcbf.T.conj() @ Syy @ a_pcbf / (np.linalg.norm(a_pcbf) ** 4)
 
 	return np.array(PCBF)/np.max(PCBF)
 
@@ -40,11 +47,16 @@ def MUSIC(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	MUSIC
 
 	"""
-	temp = rd.randn(S,L)
+	
+	s = []
+	for i in range(S):
+	   temp = scipy.signal.square(4*np.pi*c0*np.linspace(i,L+i,L)/lam)
+	   s.append(temp)
+
+	s = np.array(s)
 	n = sig_n*(rd.randn(M,L))  #Gaussien centré
-	s = np.sin((1-np.linalg.norm(V)/c0)*2*np.pi*c0*temp/4) #Je génère un signal aléatoire
 	for i in range(len(s_amp)):
-	    s[i] *= s_amp[i]
+		s[i] *= s_amp[i]
 	A = compute_A(s_angles,lam,M)
 	y = A@s + n     #On retrouve bien la linéarité
 
@@ -58,8 +70,8 @@ def MUSIC(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	Unoise = U[:,S:]
 	PMUSIC= np.zeros(N, dtype = complex)
 	for i in range(N):
-	    a_music = a(angle[i], lam,M)
-	    PMUSIC[i] = 1 / (np.conj(a_music).T @ Unoise@np.conj(Unoise.T)@a_music)
+		a_music = a(angle[i], lam,M)
+		PMUSIC[i] = 1 / (np.conj(a_music).T @ Unoise@np.conj(Unoise.T)@a_music)
 	return np.array(PMUSIC/np.max(PMUSIC))
 
 
@@ -67,103 +79,107 @@ def MVDR(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	"""
 	MVDR
 	"""
-	temp = rd.randn(S,L)
+	s = []
+	for i in range(S):
+	   temp = scipy.signal.square(4*np.pi*c0*np.linspace(i,L+i,L)/lam)
+	   s.append(temp)
+
+	s = np.array(s)
 	n = sig_n*(rd.randn(M,L))  #Gaussien centré
-	s = np.sin((1-np.linalg.norm(V)/c0)*2*np.pi*c0*temp/4) #Je génère un signal aléatoire
 	for i in range(len(s_amp)):
-	    s[i] *= s_amp[i]
+		s[i] *= s_amp[i]
 	A = compute_A(s_angles,lam,M)
 	y = A@s + n     #On retrouve bien la linéarité
 
 	Syy = y @ y.T.conj() / L
 	PMVDR = np.zeros(N, dtype = complex)
 	for i in range(N):
-	    a_pmvdr = a(angle[i], lam,M)
-	    PMVDR[i] = 1/(np.conj(a_pmvdr.T) @ np.linalg.inv(Syy) @ a_pmvdr)
+		a_pmvdr = a(angle[i], lam,M)
+		PMVDR[i] = 1/(np.conj(a_pmvdr.T) @ np.linalg.inv(Syy) @ a_pmvdr)
 	return np.array(PMVDR/np.max(PMVDR))
 
 def DP(theta):
-    """
-    Schéma directionnel  (directivity pattern)
-    :param theta:
-    :return:
-    """
-    A = a(theta,lam,M)
-    temp = np.dot(np.conj(A).T, a(theta0,lam,M))
-    dp = 20*np.log10(temp/(np.linalg.norm(a(theta,lam,M))**2))
-    return dp
+	"""
+	Schéma directionnel  (directivity pattern)
+	:param theta:
+	:return:
+	"""
+	A = a(theta,lam,M)
+	temp = np.dot(np.conj(A).T, a(theta0,lam,M))
+	dp = 20*np.log10(temp/(np.linalg.norm(a(theta,lam,M))**2))
+	return dp
 
 def a(theta,lam,M):
-    """
-    Fonction renvoyant le steering vector
-    :param theta: angle thêta
-    :param lam: longueur d'onde
-    :param M: nombre de capteurs (Donc ici nombre d'émetteurs)
-    :return: array
-    """
-    res = np.zeros(M, dtype=complex)
-    for i in range(0, M):
-        res[i] = np.exp(-1j * (2 * np.pi * d * i * np.sin(theta) / lam))
-    return res
+	"""
+	Fonction renvoyant le steering vector
+	:param theta: angle thêta
+	:param lam: longueur d'onde
+	:param M: nombre de capteurs (Donc ici nombre d'émetteurs)
+	:return: array
+	"""
+	res = np.zeros(M, dtype=complex)
+	for i in range(0, M):
+		res[i] = np.exp(-1j * (2 * np.pi * d * i * np.sin(theta) / lam))
+	return res
 
 def compute_A(thetas,lam,M):
-    """
-    Fonction renvoyant la steering matrix, qui serait la concaténation des steering vectors pour chaque theta
-    :param thetas: liste d'angles
-    :param lam: longueur d'onde
-    :param M: nombre de capteurs (Donc ici nombre d'émetteurs)
-    :return: 2D array
-    """
-    res = np.zeros((len(thetas), M), dtype = complex)
-    
-    for i in range(len(thetas)):
-        lis = np.zeros(M, dtype = complex)
-        for k in range(0,M):
-            lis[k] = np.exp(-1j * (2*np.pi*d*k*np.sin(thetas[i]) /lam))
-        res[i] = lis
-    return res.T
+	"""
+	Fonction renvoyant la steering matrix, qui serait la concaténation des steering vectors pour chaque theta
+	:param thetas: liste d'angles
+	:param lam: longueur d'onde
+	:param M: nombre de capteurs (Donc ici nombre d'émetteurs)
+	:return: 2D array
+	"""
+	res = np.zeros((len(thetas), M), dtype = complex)
+	
+	for i in range(len(thetas)):
+		lis = np.zeros(M, dtype = complex)
+		for k in range(0,M):
+			lis[k] = np.exp(-1j * (2*np.pi*d*k*np.sin(thetas[i]) /lam))
+		res[i] = lis
+	return res.T
 
 
 def a(theta,lam,M):
-    """
-    Fonction renvoyant le steering vector
-    :param theta: angle thêta
-    :param lam: longueur d'onde
-    :param M: nombre de capteurs (Donc ici nombre d'émetteurs)
-    :return: array
-    """
-    res = np.zeros(M, dtype=complex)
-    for i in range(0, M):
-        res[i] = np.exp(-1j * (2 * np.pi * d * i * np.sin(theta) / lam))
-    return res
+	"""
+	Fonction renvoyant le steering vector
+	:param theta: angle thêta
+	:param lam: longueur d'onde
+	:param M: nombre de capteurs (Donc ici nombre d'émetteurs)
+	:return: array
+	"""
+	res = np.zeros(M, dtype=complex)
+	for i in range(0, M):
+		res[i] = np.exp(-1j * (2 * np.pi * d * i * np.sin(theta) / lam))
+	return res
 
 def compute_A(thetas,lam,M):
-    """
-    Fonction renvoyant la steering matrix, qui serait la concaténation des steering vectors pour chaque theta
-    :param thetas: liste d'angles
-    :param lam: longueur d'onde
-    :param M: nombre de capteurs (Donc ici nombre d'émetteurs)
-    :return: 2D array
-    """
-    res = np.zeros((len(thetas), M), dtype = complex)
-    
-    for i in range(len(thetas)):
-        lis = np.zeros(M, dtype = complex)
-        for k in range(0,M):
-            lis[k] = np.exp(-1j * (2*np.pi*d*k*np.sin(thetas[i]) /lam))
-        res[i] = lis
-    return res.T
+	"""
+	Fonction renvoyant la steering matrix, qui serait la concaténation des steering vectors pour chaque theta
+	:param thetas: liste d'angles
+	:param lam: longueur d'onde
+	:param M: nombre de capteurs (Donc ici nombre d'émetteurs)
+	:return: 2D array
+	"""
+	res = np.zeros((len(thetas), M), dtype = complex)
+	
+	for i in range(len(thetas)):
+		lis = np.zeros(M, dtype = complex)
+		for k in range(0,M):
+			lis[k] = np.exp(-1j * (2*np.pi*d*k*np.sin(thetas[i]) /lam))
+		res[i] = lis
+	return res.T
 
 def DP(theta,lam,M,theta0):
-    """
-    Schéma directionnel  (directivity pattern)
-    :param theta:
-    :return:
-    """
-    A = a(theta,lam,M)
-    temp = np.dot(np.conj(A).T, a(theta0,lam,M))
-    dp = 20*np.log10(temp/(np.linalg.norm(a(theta,lam,M))**2))
-    return dp
+	"""
+	Schéma directionnel  (directivity pattern)
+	:param theta:
+	:return:
+	"""
+	A = a(theta,lam,M)
+	temp = np.dot(np.conj(A).T, a(theta0,lam,M))
+	dp = 20*np.log10(temp/(np.linalg.norm(a(theta,lam,M))**2))
+	return dp
 
 
 
