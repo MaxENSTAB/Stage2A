@@ -11,7 +11,6 @@ import time as t
 
 
 
-# Bref ça marche pas encore 
 def CBF(s_angles,s_amp,sig_n,N,M,S,L,lam,V):
 	"""
 	Classical beamforming, renvoie PCBF
@@ -181,7 +180,72 @@ def DP(theta,lam,M,theta0):
 	dp = 20*np.log10(temp/(np.linalg.norm(a(theta,lam,M))**2))
 	return dp
 
+def C_matrix(nbCibles,AmpEcho,init_pos,v0,T):
+    """
+    Cette fonction va génerer deux matrices : une dont les lignes sont les c_angles précédents, l'autre dont les 
+    lignes sont les c_amp précédents.
+    init_pos est sous la forme : 
+    [[x1,..,xn],[y1,...,yn]] --> rs = (xs-x)**2  + (ys-y)**2 et thetas = arctan((x1-v0*t)/(y1-y0))
+    v0 : vitesse
+    T : nombres de fois où on fait appel aux fonctions CBF, MUSIC et MVDR
+    :param nbCibles: int
+    :param AmpEcho: (nbCibles,)-array
+    :param init_pos: 2D-array
+    :param v0: float
+    :param T: int
+    :return: 2 *  2D-arrays
+    """
+    
+    if len(init_pos[0]) != nbCibles:
+        warnings.warn(f' {len(init_pos[0])} is different from {nbCibles}')
+    
+    C_ang_mat = np.zeros((T,nbCibles))
+    C_amp_mat = np.zeros((T,nbCibles))
+    xs = init_pos[0]
+    ys = init_pos[1]
+    
+    for c in range(nbCibles):
+        x,y = init_pos[0][c],init_pos[1][c]
+        C_ang_mat[0][c] = np.arctan(x/y)
+        C_amp_mat[0][c] = AmpEcho[c] *(x**2 + y**2)**(-1/2)
+        
+    for t in range(1,T):
+        for c in range(nbCibles):
+            C_ang_mat[t][0] = np.arctan((xs[c]-v0*t)/ys[c])
+            C_amp_mat[t][0] = AmpEcho[c]* ((xs[c]-v0*t)**2 + ys[c]**2)**(1/2)
+            C_ang_mat[t][1] = np.arctan((xs[c]+v0*t)/ys[c])
+            C_amp_mat[t][1] = AmpEcho[c]* ((xs[c]+v0*t)**2 + ys[c]**2)**(1/2)
+    
+    return np.array(C_amp_mat), np.array(C_ang_mat)
 
+
+
+def HMFW(plot):
+    """
+    A partir d'une courbe de PCBF, renvoie la liste des couples d'abscisses délimitant les extrémités d'un pic.
+    :param plot: 1D array of CBF values
+    :return: list of abscissa where the plot is equal to 0.5 
+    """
+    temp = []
+    for i,value in enumerate(np.abs(plot)):
+        if np.abs(value-0.5)<5e-3 and angle[i-1] not in temp:
+            temp.append(angle[i])
+    l = len(temp)
+    print(l)
+    return temp
+
+def transmit(directions):
+    sig_e = 5e-3
+    temp = rd.randn(M1,L)
+    s = []
+    for i in range(len(directions)):
+        s.append(scipy.signal.square(4*np.pi*c0*np.linspace(0,L,L)/lam))
+    s = np.array(s)
+    n = sig_e*(rd.randn(M1,L))  #Gaussien centré
+    steer = compute_A(directions,lam,M1)
+          
+    y = steer@s
+    return y
 
 
 
