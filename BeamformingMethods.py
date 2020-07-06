@@ -234,7 +234,7 @@ def HMFW(plot):
     print(l)
     return temp
 
-def transmit(directions):
+def transmit(directions,M1,L):
     sig_e = 5e-3
     temp = rd.randn(M1,L)
     s = []
@@ -254,5 +254,6 @@ d = 0.4          #Distance entre mes émetteurs
 M = 5              #Nombre d'émetteurs sur ma cible
 N = 4*721
 angle = np.linspace(-np.pi/2,np.pi/2,N)     #Grille sur laquel on va chercher l'angle d'incidence
-
+M1 = 10  #Nombre d'émetteurs pour le notebook BeamEmission
 theta0 = 0   #Angle d'incidence auquel se situe le radar qu'on doit tromper : là, il est en face de la cible.
+lam =1
