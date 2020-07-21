@@ -234,6 +234,7 @@ def HMFW(plot):
     print(l)
     return temp
 
+####### A MODIFIER, ne pas appliquer le beamformer dans cette fonction.
 def transmit(directions,M1,L):
     sig_e = 5e-3
     temp = rd.randn(M1,L)
