@@ -121,23 +121,6 @@ def a(theta,lam,M):
 		res[i] = np.exp(-1j * (2 * np.pi * d * i * np.sin(theta) / lam))
 	return res
 
-def compute_A(thetas,lam,M):
-	"""
-	Fonction renvoyant la steering matrix, qui serait la concaténation des steering vectors pour chaque theta
-	:param thetas: liste d'angles
-	:param lam: longueur d'onde
-	:param M: nombre de capteurs (Donc ici nombre d'émetteurs)
-	:return: 2D array
-	"""
-	res = np.zeros((len(thetas), M), dtype = complex)
-	
-	for i in range(len(thetas)):
-		lis = np.zeros(M, dtype = complex)
-		for k in range(0,M):
-			lis[k] = np.exp(-1j * (2*np.pi*d*k*np.sin(thetas[i]) /lam))
-		res[i] = lis
-	return res.T
-
 
 def a(theta,lam,M):
 	"""
@@ -234,19 +217,12 @@ def HMFW(plot):
     print(l)
     return temp
 
-####### A MODIFIER, ne pas appliquer le beamformer dans cette fonction.
+
 def transmit(directions,M1,L):
-    sig_e = 5e-3
-    temp = rd.randn(M1,L)
-    s = []
-    for i in range(len(directions)):
-        s.append(scipy.signal.square(4*np.pi*c0*np.linspace(0,L,L)/lam))
-    s = np.array(s)
-    n = sig_e*(rd.randn(M1,L))  #Gaussien centré
-    steer = compute_A(directions,lam,M1)
-          
-    y = steer@s
-    return y
+    """
+    Afin de coller au sujet, mais d'être plus proche de la réalité, il va falloir que je change de moyen de simulation. Ici, je ne peux pas simuler simplement l'émission de l'onde. 
+    """
+    pass
 
 
 
