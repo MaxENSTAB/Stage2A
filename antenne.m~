@@ -24,7 +24,7 @@ K=1000;
 for k=1:K
     a1 = randn(1) + j * randn(1);
     a2 = randn(1) + j * randn(1);
-    nn = a1 *s1 + a2 * s2 + 0.001*(randn(N,1)+j*randn(N,1)) + a1*s2 + a2*s1;
+    nn = a1 *s1 + a2 * s2 + 0.001*(randn(N,1)+j*randn(N,1)) + a1*s2;
     R = R + nn * nn';
 end
 R = R/K;
