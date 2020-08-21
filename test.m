@@ -18,12 +18,14 @@ theta2 = 40/180*pi;
 dphi2 = 2*pi*d*sin(theta2)/l;
 s2 = exp(j*dphi2*n);
 R = zeros(N);
-K=1000;
+
+
+K=5;
 for k=1:K
     a1 = randn(1) + j * randn(1);
     a2 = randn(1) + j * randn(1);
     nn = a1 *s1 + a2 * s2 + 0.001*(randn(N,1)+j*randn(N,1));
-    R = R + nn * nn';
+    R = R + nn * nn'
 end
 R = R/K;
 
