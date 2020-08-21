@@ -1,9 +1,16 @@
 # Stage2A
-Beamforming et contre-mesure RADAR active
+Beamforming et contre-mesure RADAR
 
-Un émetteur "trompant" un autre radar. 
+Ce dossier, en plus de contenir des annexes et des images agrémentant les codes, contient trois Ipython Notebooks et un fichier python : 
+- DoANotebook : qui propose plusieurs exemples de méthode de détermination de la direction d'arrivée (DoA)
+- BeamEmissionNotebook : exemple où on émet dans une direction détectée
+- Simulation : qui utilise les notations données par le Pr. Neyt. 
+- BeamformingMethods : fichier python regroupant les fonctions que j'ai écrites et intervenant dans les notebooks 
 
-On suppose dans un premier temps (pour simplifier) qu'aussi bien le radar que la cible se trouvent dans un plan. L'idée est que la cible possède deux (ou plus) émetteurs (dont elle peut éventuellement contrôler l'espacement (ex: sur un petit flotteur ou une petite plateforme (UGV/UAV) télécommandée) cohérents et qu'elle les utilise pour produire les échos d'une fausse cible qui est interprétée comme provenant d'une autre direction.
+Pour profiter des animations, mais aussi de la mise en page, je vous invite à utiliser Jupyter, et python 3.7. 
+
+Pour copier le contenu de ce repository, utilisez la commande suivante :
+% git clone https://github.com/MaxENSTA/Stage2A
 
 
-Le but de ce projet est d'utiliser le beamforming/formation de faisceaux
+- M.B. 
