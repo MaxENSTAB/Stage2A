@@ -5,9 +5,6 @@ import scipy
 from scipy.signal import find_peaks
 
 import time as t
-####################################################################################################
-#  ATTENTION, il faut revoir ce que je mets en entrée, et surtout penser à la portée des var
-####################################################################################################
 
 
 
