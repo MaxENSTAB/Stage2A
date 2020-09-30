@@ -10,7 +10,7 @@ Ce dossier, en plus de contenir des annexes et des images agrémentant les codes
 Pour profiter des animations, mais aussi de la mise en page, je vous invite à utiliser Jupyter, et python 3.7. 
 
 Pour copier le contenu de ce repository, utilisez la commande suivante :
-% git clone https://github.com/MaxENSTA/Stage2A
+% git clone https://github.com/MaxENSTAB/Stage2A
 
 
 - M.B. 
